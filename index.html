@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>忘年会クイズ</title>
+    <title>忘年会クイズ2024</title>
     <style>
         * {
             margin: 0;
@@ -27,11 +27,11 @@
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         }
 
-        .start-screen, .quiz-screen, .result-screen {
+        .start-screen, .quiz-screen, .result-screen, .section-screen {
             display: none;
         }
 
-        .start-screen.active, .quiz-screen.active, .result-screen.active {
+        .start-screen.active, .quiz-screen.active, .result-screen.active, .section-screen.active {
             display: block;
         }
 
@@ -75,6 +75,43 @@
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
         }
 
+        /* セクション画面 */
+        .section-screen {
+            text-align: center;
+            padding: 80px 40px;
+        }
+
+        .section-screen h1 {
+            font-size: 64px;
+            color: #667eea;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .section-screen h2 {
+            font-size: 48px;
+            color: #764ba2;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .section-continue {
+            margin-top: 60px;
+            padding: 20px 50px;
+            font-size: 24px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .section-continue:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
         .progress-bar {
             background: #e0e0e0;
             height: 10px;
@@ -114,6 +151,7 @@
             font-weight: bold;
             line-height: 1.5;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            white-space: pre-line;
         }
 
         .options-grid {
@@ -253,6 +291,13 @@
             </div>
         </div>
 
+        <!-- セクション区切り画面 -->
+        <div class="section-screen">
+            <h1>第一部</h1>
+            <h2>2025年1月以降入社者</h2>
+            <button class="section-continue" onclick="continueToNextSection()">続ける</button>
+        </div>
+
         <!-- クイズ画面 -->
         <div class="quiz-screen">
             <div class="progress-bar">
@@ -278,10 +323,10 @@
     </div>
 
     <script>
-        // クイズデータ
+        // クイズデータ（全9問）
         const quizData = [
             {
-                question: "学生時代、実は〇〇でした!\n組み合わせを正解せよ",
+                question: "学生時代、実は〇〇でした！\n組み合わせを正解せよ",
                 options: [
                     "城井×坊主",
                     "岩崎×体育会の部活で宴会隊長",
@@ -290,7 +335,7 @@
                 ]
             },
             {
-                question: "まだ誰にも教えたことのない趣味は?",
+                question: "まだ誰にも教えたことのない趣味は？",
                 options: [
                     "毎田×(母と一緒に)ハガキ職人",
                     "河村×兄のSNSを監視すること",
@@ -299,7 +344,7 @@
                 ]
             },
             {
-                question: "富樫さんが過去の恋愛にまつわる「今だから言える話」は?",
+                question: "富樫さんが過去の恋愛にまつわる\n「今だから言える話」は？",
                 options: [
                     "大学のオープンキャンパスで好きな人を誘っていた",
                     "大学院生時代に付き合っていた彼女に監禁されていた",
@@ -308,21 +353,58 @@
                 ]
             },
             {
-                question: "岩崎さんの仕事のこだわりは?",
+                question: "岩崎さんの仕事のこだわりは？",
                 options: [
                     "電話の時に必要以上に声色を上げている",
                     "イスは一番高いところまで上げて座る",
                     "若干遅れ目にMeetに入る",
-                    "これでいこう!と思ったことを一晩寝かせて、翌日も良いものと思えれば採用する"
+                    "これでいこう！と思ったことを一晩寝かせて、翌日も良いものと思えれば採用する"
                 ]
             },
             {
-                question: "城井さん最近一番ブチギレたエピソードは?",
+                question: "城井さん最近一番ブチギレた\nエピソードは？",
                 options: [
                     "大塚さんとフェス(11:00開始)に行く約束してたのに寝坊して18:30に来た",
                     "車から家へ運ぶ荷物の割合で妻にキレられたこと",
                     "アイアンがうまく当たらなくてキレ散らかしてます(ゴルフの話)",
                     "怒ったことない みんなたいせつ しあわせ"
+                ]
+            },
+            // 新入社員向け問題
+            {
+                question: "えりちょすこと吉川枝里の\n学生時代、実は〇〇でした〜〜",
+                options: [
+                    "大食いだった",
+                    "寝坊ばかりで進級が危なかった",
+                    "インコを飼っていた",
+                    "飲み比べで女性に負けたことがなかった"
+                ]
+            },
+            {
+                question: "とっしーこと平井壽希が\nガチで本物と間違えられた芸能人は？",
+                options: [
+                    "平野紫耀(元キンプリ)",
+                    "吉村崇(平成ノブシコブシ)",
+                    "白濱亜嵐(GENERATIONS)",
+                    "その他"
+                ]
+            },
+            {
+                question: "なもさんこと名本佳央が\n放ったひとこと",
+                options: [
+                    "可愛くても",
+                    "金持ちでも",
+                    "慶應出ててても",
+                    "TWICEのミナでも"
+                ]
+            },
+            {
+                question: "カザフこと赤坂幸亮が\nダーツサークルの部長に立候補した理由",
+                options: [
+                    "前日の飲みで負けたから",
+                    "人の上に立ち支配してみたかったから",
+                    "ガクチカに使えると思ったから",
+                    "可愛い子しか入サーさせたくなかったから"
                 ]
             }
         ];
@@ -330,6 +412,7 @@
         let currentTeam = null;
         let currentQuestion = 0;
         let answers = [];
+        const SECTION_BREAK = 5; // 5問目の後にセクション区切り
 
         function startQuiz(teamNumber) {
             currentTeam = teamNumber;
@@ -383,11 +466,21 @@
             
             currentQuestion++;
             
-            if (currentQuestion < quizData.length) {
+            // 5問目の後にセクション区切りを表示
+            if (currentQuestion === SECTION_BREAK) {
+                document.querySelector('.quiz-screen').classList.remove('active');
+                document.querySelector('.section-screen').classList.add('active');
+            } else if (currentQuestion < quizData.length) {
                 showQuestion();
             } else {
                 showResult();
             }
+        }
+
+        function continueToNextSection() {
+            document.querySelector('.section-screen').classList.remove('active');
+            document.querySelector('.quiz-screen').classList.add('active');
+            showQuestion();
         }
 
         // 1問ずつSpreadsheetに送信する関数
@@ -427,7 +520,7 @@
             document.body.appendChild(form);
             form.submit();
             
-            console.log(`Q${questionIndex + 1}の回答を送信:`, answerData);
+            console.log(`✓ ${currentTeam}班 Q${questionIndex + 1}の回答(${labels[answerIndex]})を送信しました`);
             
             // 後片付け
             setTimeout(() => {
@@ -440,7 +533,7 @@
             document.querySelector('.quiz-screen').classList.remove('active');
             document.querySelector('.result-screen').classList.add('active');
             document.getElementById('resultMessage').textContent = 
-                `${currentTeam}班の全回答を送信しました!`;
+                `${currentTeam}班の全回答を送信しました！`;
         }
     </script>
 </body>
