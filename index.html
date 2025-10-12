@@ -388,48 +388,58 @@
             }
         }
 
-        async function submitAnswers() {
-            const resultData = {
-                team: currentTeam,
-                answers: answers,
-                timestamp: new Date().toISOString()
-            };
-            
-            // ローカルストレージにバックアップ保存
-            const allResults = JSON.parse(localStorage.getItem('quizResults') || '[]');
-            allResults.push(resultData);
-            localStorage.setItem('quizResults', JSON.stringify(allResults));
-            
-            // Google Sheetsへ送信
-            const GAS_URL = 'https://script.google.com/macros/s/AKfycbzgb3M1GQImh1iVKS9tytj-L6RaaGR-_wmR9bbyogEi15rfFGOsafjHeV3e1iD51MvE/exec';
-            
-            try {
-                const response = await fetch(GAS_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(resultData),
-                    redirect: 'follow'
-                });
-                
-                const result = await response.text();
-                console.log('送信成功:', result);
-                console.log('送信データ:', resultData);
-                
-            } catch (error) {
-                console.error('送信エラー:', error);
-                alert('送信に失敗しました。ネットワークを確認してください。\n\nデータはローカルに保存されています。');
-            }
-            
-            document.querySelector('.quiz-screen').classList.remove('active');
-            document.querySelector('.result-screen').classList.add('active');
-            document.getElementById('resultMessage').textContent = 
-                `${currentTeam}班の回答を送信しました！`;
-        }
+function submitAnswers() {
+    const resultData = {
+        team: currentTeam,
+        answers: answers,
+        timestamp: new Date().toISOString()
+    };
+    
+    // ローカルストレージにバックアップ保存
+    const allResults = JSON.parse(localStorage.getItem('quizResults') || '[]');
+    allResults.push(resultData);
+    localStorage.setItem('quizResults', JSON.stringify(allResults));
+    
+    // Google Sheetsへ送信（form方式でCORS回避）
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbzgb3M1GQImh1iVKS9tytj-L6RaaGR-_wmR9bbyogEi15rfFGOsafjHeV3e1iD51MvE/exec';
+    
+    // iframeを使った非同期送信
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    iframe.name = 'hidden_iframe';
+    document.body.appendChild(iframe);
+    
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = GAS_URL;
+    form.target = 'hidden_iframe';
+    
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'data';
+    input.value = JSON.stringify(resultData);
+    form.appendChild(input);
+    
+    document.body.appendChild(form);
+    form.submit();
+    
+    console.log('送信データ:', resultData);
+    
+    // フォームとiframeを削除
+    setTimeout(() => {
+        document.body.removeChild(form);
+        document.body.removeChild(iframe);
+    }, 1000);
+    
+    document.querySelector('.quiz-screen').classList.remove('active');
+    document.querySelector('.result-screen').classList.add('active');
+    document.getElementById('resultMessage').textContent = 
+        `${currentTeam}班の回答を送信しました！`;
+}
     </script>
 </body>
 
 </html>
+
 
 
