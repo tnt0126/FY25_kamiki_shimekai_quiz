@@ -387,59 +387,131 @@
                 submitAnswers();
             }
         }
+// クイズデータは同じ
+const quizData = [
+    // ... 既存のデータ
+];
 
-function submitAnswers() {
-    const resultData = {
+let currentTeam = null;
+let currentQuestion = 0;
+let answers = [];
+
+function startQuiz(teamNumber) {
+    currentTeam = teamNumber;
+    currentQuestion = 0;
+    answers = [];
+    
+    document.querySelector('.start-screen').classList.remove('active');
+    document.querySelector('.quiz-screen').classList.add('active');
+    
+    showQuestion();
+}
+
+function showQuestion() {
+    const question = quizData[currentQuestion];
+    const progress = ((currentQuestion + 1) / quizData.length) * 100;
+    
+    document.getElementById('progressBar').style.width = progress + '%';
+    document.getElementById('questionNumber').textContent = `Q${currentQuestion + 1}`;
+    document.getElementById('questionText').textContent = question.question;
+    
+    const optionsGrid = document.getElementById('optionsGrid');
+    optionsGrid.innerHTML = '';
+    
+    const labels = ['A', 'B', 'C', 'D'];
+    question.options.forEach((option, index) => {
+        const optionDiv = document.createElement('div');
+        optionDiv.className = `option-box option-${labels[index].toLowerCase()}`;
+        optionDiv.innerHTML = `
+            <div class="option-label">${labels[index]}</div>
+            <div class="option-text">${option}</div>
+        `;
+        optionDiv.onclick = () => selectOption(index, optionDiv);
+        optionsGrid.appendChild(optionDiv);
+    });
+    
+    document.getElementById('nextButton').disabled = true;
+}
+
+function selectOption(index, element) {
+    document.querySelectorAll('.option-box').forEach(box => {
+        box.classList.remove('selected');
+    });
+    element.classList.add('selected');
+    answers[currentQuestion] = index;
+    document.getElementById('nextButton').disabled = false;
+}
+
+function nextQuestion() {
+    // 現在の問題の回答を即座にSpreadsheetに送信
+    sendAnswerToSheet(currentQuestion, answers[currentQuestion]);
+    
+    currentQuestion++;
+    
+    if (currentQuestion < quizData.length) {
+        showQuestion();
+    } else {
+        showResult();
+    }
+}
+
+// 1問ずつSpreadsheetに送信する関数
+function sendAnswerToSheet(questionIndex, answerIndex) {
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbzgb3M1GQImh1iVKS9tytj-L6RaaGR-_wmR9bbyogEi15rfFGOsafjHeV3e1iD51MvE/exec';
+    
+    const labels = ['A', 'B', 'C', 'D'];
+    const answerData = {
         team: currentTeam,
-        answers: answers,
+        questionNumber: questionIndex + 1, // Q1, Q2, ...
+        answer: labels[answerIndex],
         timestamp: new Date().toISOString()
     };
     
-    // ローカルストレージにバックアップ保存
+    // ローカルストレージにバックアップ
     const allResults = JSON.parse(localStorage.getItem('quizResults') || '[]');
-    allResults.push(resultData);
+    allResults.push(answerData);
     localStorage.setItem('quizResults', JSON.stringify(allResults));
     
-    // Google Sheetsへ送信（form方式でCORS回避）
-    const GAS_URL = 'https://script.google.com/macros/s/AKfycbzgb3M1GQImh1iVKS9tytj-L6RaaGR-_wmR9bbyogEi15rfFGOsafjHeV3e1iD51MvE/exec';
-    
-    // iframeを使った非同期送信
+    // form方式で送信（CORS回避）
     const iframe = document.createElement('iframe');
     iframe.style.display = 'none';
-    iframe.name = 'hidden_iframe';
+    iframe.name = 'hidden_iframe_' + Date.now();
     document.body.appendChild(iframe);
     
     const form = document.createElement('form');
     form.method = 'POST';
     form.action = GAS_URL;
-    form.target = 'hidden_iframe';
+    form.target = iframe.name;
     
     const input = document.createElement('input');
     input.type = 'hidden';
     input.name = 'data';
-    input.value = JSON.stringify(resultData);
+    input.value = JSON.stringify(answerData);
     form.appendChild(input);
     
     document.body.appendChild(form);
     form.submit();
     
-    console.log('送信データ:', resultData);
+    console.log(`Q${questionIndex + 1}の回答を送信:`, answerData);
     
-    // フォームとiframeを削除
+    // 後片付け
     setTimeout(() => {
-        document.body.removeChild(form);
-        document.body.removeChild(iframe);
-    }, 1000);
-    
+        if (document.body.contains(form)) document.body.removeChild(form);
+        if (document.body.contains(iframe)) document.body.removeChild(iframe);
+    }, 2000);
+}
+
+function showResult() {
     document.querySelector('.quiz-screen').classList.remove('active');
     document.querySelector('.result-screen').classList.add('active');
     document.getElementById('resultMessage').textContent = 
-        `${currentTeam}班の回答を送信しました！`;
+        `${currentTeam}班の全回答を送信しました！`;
 }
     </script>
 </body>
 
 </html>
+
 
 
 
