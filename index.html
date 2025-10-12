@@ -401,7 +401,7 @@
             localStorage.setItem('quizResults', JSON.stringify(allResults));
             
             // Google Sheetsへ送信
-            const GAS_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE'; // ここにGASのURLを入れる
+            const GAS_URL = 'https://script.google.com/macros/s/AKfycbzgb3M1GQImh1iVKS9tytj-L6RaaGR-_wmR9bbyogEi15rfFGOsafjHeV3e1iD51MvE/exec'; // ここにGASのURLを入れる
             
             try {
                 const response = await fetch(GAS_URL, {
@@ -428,3 +428,4 @@
 </body>
 
 </html>
+
