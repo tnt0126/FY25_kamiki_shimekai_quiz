@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>忘年会クイズ2024</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Hiragino Kaku Gothic ProN', 'メイリオ', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px;
+            padding: 50px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .start-screen, .quiz-screen, .result-screen, .section-screen {
+            display: none;
+        }
+
+        .start-screen.active, .quiz-screen.active, .result-screen.active, .section-screen.active {
+            display: block;
+        }
+
+        .team-select {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .team-select h1 {
+            font-size: 48px;
+            color: #667eea;
+            margin-bottom: 40px;
+        }
+
+        .team-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .team-button {
+            padding: 30px;
+            font-size: 24px;
+            font-weight: bold;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+        }
+
+        .team-button:nth-child(1) { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .team-button:nth-child(2) { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .team-button:nth-child(3) { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+        .team-button:nth-child(4) { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+        .team-button:nth-child(5) { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+
+        .team-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        /* セクション画面 */
+        .section-screen {
+            text-align: center;
+            padding: 80px 40px;
+        }
+
+        .section-screen h1 {
+            font-size: 64px;
+            color: #667eea;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .section-screen h2 {
+            font-size: 48px;
+            color: #764ba2;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .section-continue {
+            margin-top: 60px;
+            padding: 20px 50px;
+            font-size: 24px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .section-continue:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .progress-bar {
+            background: #e0e0e0;
+            height: 10px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+            transition: width 0.3s ease;
+        }
+
+        .question-section {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            padding: 30px 40px;
+            border-radius: 20px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .question-number {
+            display: inline-block;
+            background: white;
+            color: #4facfe;
+            font-size: 24px;
+            font-weight: bold;
+            padding: 8px 20px;
+            border-radius: 50px;
+            margin-bottom: 15px;
+        }
+
+        .question-text {
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            line-height: 1.5;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            white-space: pre-line;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .option-box {
+            background: white;
+            border: 5px solid #e0e0e0;
+            border-radius: 20px;
+            padding: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            min-height: 100px;
+        }
+
+        .option-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            border-color: #4facfe;
+        }
+
+        .option-box.selected {
+            border-color: #4facfe;
+            background: #e3f5ff;
+            border-width: 6px;
+        }
+
+        .option-label {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: bold;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .option-a .option-label { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .option-b .option-label { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .option-c .option-label { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+        .option-d .option-label { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+
+        .option-text {
+            font-size: 20px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .next-button {
+            margin-top: 30px;
+            padding: 20px 50px;
+            font-size: 24px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            display: block;
+            margin-left: auto;
+            transition: all 0.3s ease;
+        }
+
+        .next-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .next-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .result-screen {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .result-screen h1 {
+            font-size: 48px;
+            color: #667eea;
+            margin-bottom: 30px;
+        }
+
+        .result-screen p {
+            font-size: 24px;
+            margin-bottom: 40px;
+        }
+
+        .restart-button {
+            padding: 20px 50px;
+            font-size: 24px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+            .question-text {
+                font-size: 22px;
+            }
+            .option-text {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- スタート画面 -->
+        <div class="start-screen active">
+            <div class="team-select">
+                <h1>🎉 忘年会クイズ 2024 🎉</h1>
+                <p style="font-size: 24px; color: #666;">班を選択してください</p>
+                <div class="team-buttons">
+                    <button class="team-button" onclick="startQuiz(1)">1班</button>
+                    <button class="team-button" onclick="startQuiz(2)">2班</button>
+                    <button class="team-button" onclick="startQuiz(3)">3班</button>
+                    <button class="team-button" onclick="startQuiz(4)">4班</button>
+                    <button class="team-button" onclick="startQuiz(5)">5班</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- セクション区切り画面 -->
+        <div class="section-screen">
+            <h1>第一部</h1>
+            <h2>2025年1月以降入社者</h2>
+            <button class="section-continue" onclick="continueToNextSection()">続ける</button>
+        </div>
+
+        <!-- クイズ画面 -->
+        <div class="quiz-screen">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar"></div>
+            </div>
+
+            <div class="question-section">
+                <div class="question-number" id="questionNumber">Q1</div>
+                <div class="question-text" id="questionText"></div>
+            </div>
+
+            <div class="options-grid" id="optionsGrid"></div>
+
+            <button class="next-button" id="nextButton" onclick="nextQuestion()" disabled>次へ</button>
+        </div>
+
+        <!-- 結果画面 -->
+        <div class="result-screen">
+            <h1>🎊 お疲れ様でした！ 🎊</h1>
+            <p id="resultMessage">回答を送信しました</p>
+            <button class="restart-button" onclick="location.reload()">最初に戻る</button>
+        </div>
+    </div>
+
+    <script>
+        // クイズデータ（全9問）
+        const quizData = [
+            {
+                question: "学生時代、実は〇〇でした！\n組み合わせを正解せよ",
+                options: [
+                    "城井×坊主",
+                    "岩崎×体育会の部活で宴会隊長",
+                    "石田×勉強部",
+                    "前川×体力テストで学年2位"
+                ]
+            },
+            {
+                question: "まだ誰にも教えたことのない趣味は？",
+                options: [
+                    "毎田×(母と一緒に)ハガキ職人",
+                    "河村×兄のSNSを監視すること",
+                    "山本×インスタに出てくる女性向け恋愛小説を読む",
+                    "吉田×大きめの公園で、子どもがサッカーするのを見る"
+                ]
+            },
+            {
+                question: "富樫さんが過去の恋愛にまつわる\n「今だから言える話」は？",
+                options: [
+                    "大学のオープンキャンパスで好きな人を誘っていた",
+                    "大学院生時代に付き合っていた彼女に監禁されていた",
+                    "大学デビューで4月にタイプの女性2人とデートに行った",
+                    "最近一番最初に付き合った彼女に結婚を迫られている"
+                ]
+            },
+            {
+                question: "岩崎さんの仕事のこだわりは？",
+                options: [
+                    "電話の時に必要以上に声色を上げている",
+                    "イスは一番高いところまで上げて座る",
+                    "若干遅れ目にMeetに入る",
+                    "これでいこう！と思ったことを一晩寝かせて、翌日も良いものと思えれば採用する"
+                ]
+            },
+            {
+                question: "城井さん最近一番ブチギレた\nエピソードは？",
+                options: [
+                    "大塚さんとフェス(11:00開始)に行く約束してたのに寝坊して18:30に来た",
+                    "車から家へ運ぶ荷物の割合で妻にキレられたこと",
+                    "アイアンがうまく当たらなくてキレ散らかしてます(ゴルフの話)",
+                    "怒ったことない みんなたいせつ しあわせ"
+                ]
+            },
+            // 新入社員向け問題
+            {
+                question: "えりちょすこと吉川枝里の\n学生時代、実は〇〇でした〜〜",
+                options: [
+                    "大食いだった",
+                    "寝坊ばかりで進級が危なかった",
+                    "インコを飼っていた",
+                    "飲み比べで女性に負けたことがなかった"
+                ]
+            },
+            {
+                question: "とっしーこと平井壽希が\nガチで本物と間違えられた芸能人は？",
+                options: [
+                    "平野紫耀(元キンプリ)",
+                    "吉村崇(平成ノブシコブシ)",
+                    "白濱亜嵐(GENERATIONS)",
+                    "その他"
+                ]
+            },
+            {
+                question: "なもさんこと名本佳央が\n放ったひとこと",
+                options: [
+                    "可愛くても",
+                    "金持ちでも",
+                    "慶應出ててても",
+                    "TWICEのミナでも"
+                ]
+            },
+            {
+                question: "カザフこと赤坂幸亮が\nダーツサークルの部長に立候補した理由",
+                options: [
+                    "前日の飲みで負けたから",
+                    "人の上に立ち支配してみたかったから",
+                    "ガクチカに使えると思ったから",
+                    "可愛い子しか入サーさせたくなかったから"
+                ]
+            }
+        ];
+
+        let currentTeam = null;
+        let currentQuestion = 0;
+        let answers = [];
+        const SECTION_BREAK = 5; // 5問目の後にセクション区切り
+
+        function startQuiz(teamNumber) {
+            currentTeam = teamNumber;
+            currentQuestion = 0;
+            answers = [];
+            
+            document.querySelector('.start-screen').classList.remove('active');
+            document.querySelector('.quiz-screen').classList.add('active');
+            
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const question = quizData[currentQuestion];
+            const progress = ((currentQuestion + 1) / quizData.length) * 100;
+            
+            document.getElementById('progressBar').style.width = progress + '%';
+            document.getElementById('questionNumber').textContent = `Q${currentQuestion + 1}`;
+            document.getElementById('questionText').textContent = question.question;
+            
+            const optionsGrid = document.getElementById('optionsGrid');
+            optionsGrid.innerHTML = '';
+            
+            const labels = ['A', 'B', 'C', 'D'];
+            question.options.forEach((option, index) => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = `option-box option-${labels[index].toLowerCase()}`;
+                optionDiv.innerHTML = `
+                    <div class="option-label">${labels[index]}</div>
+                    <div class="option-text">${option}</div>
+                `;
+                optionDiv.onclick = () => selectOption(index, optionDiv);
+                optionsGrid.appendChild(optionDiv);
+            });
+            
+            document.getElementById('nextButton').disabled = true;
+        }
+
+        function selectOption(index, element) {
+            document.querySelectorAll('.option-box').forEach(box => {
+                box.classList.remove('selected');
+            });
+            element.classList.add('selected');
+            answers[currentQuestion] = index;
+            document.getElementById('nextButton').disabled = false;
+        }
+
+        function nextQuestion() {
+            // 現在の問題の回答を即座にSpreadsheetに送信
+            sendAnswerToSheet(currentQuestion, answers[currentQuestion]);
+            
+            currentQuestion++;
+            
+            // 5問目の後にセクション区切りを表示
+            if (currentQuestion === SECTION_BREAK) {
+                document.querySelector('.quiz-screen').classList.remove('active');
+                document.querySelector('.section-screen').classList.add('active');
+            } else if (currentQuestion < quizData.length) {
+                showQuestion();
+            } else {
+                showResult();
+            }
+        }
+
+        function continueToNextSection() {
+            document.querySelector('.section-screen').classList.remove('active');
+            document.querySelector('.quiz-screen').classList.add('active');
+            showQuestion();
+        }
+
+        // 1問ずつSpreadsheetに送信する関数
+        function sendAnswerToSheet(questionIndex, answerIndex) {
+            const GAS_URL = 'https://script.google.com/macros/s/AKfycbzJLAWirxBMCYU0JaL3yrz0jnmi9dtDhWV5BXQps1RpNr_ebgTArKJtybnJfTQ5dBDq/exec';
+            
+            const labels = ['A', 'B', 'C', 'D'];
+            const answerData = {
+                team: currentTeam,
+                questionNumber: questionIndex + 1,
+                answer: labels[answerIndex],
+                timestamp: new Date().toISOString()
+            };
+            
+            // ローカルストレージにバックアップ
+            const allResults = JSON.parse(localStorage.getItem('quizResults') || '[]');
+            allResults.push(answerData);
+            localStorage.setItem('quizResults', JSON.stringify(allResults));
+            
+            // form方式で送信(CORS回避)
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.name = 'hidden_iframe_' + Date.now();
+            document.body.appendChild(iframe);
+            
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = GAS_URL;
+            form.target = iframe.name;
+            
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'data';
+            input.value = JSON.stringify(answerData);
+            form.appendChild(input);
+            
+            document.body.appendChild(form);
+            form.submit();
+            
+            console.log(`✓ ${currentTeam}班 Q${questionIndex + 1}の回答(${labels[answerIndex]})を送信しました`);
+            
+            // 後片付け
+            setTimeout(() => {
+                if (document.body.contains(form)) document.body.removeChild(form);
+                if (document.body.contains(iframe)) document.body.removeChild(iframe);
+            }, 2000);
+        }
+
+        function showResult() {
+            document.querySelector('.quiz-screen').classList.remove('active');
+            document.querySelector('.result-screen').classList.add('active');
+            document.getElementById('resultMessage').textContent = 
+                `${currentTeam}班の全回答を送信しました！`;
+        }
+    </script>
+</body>
+</html>
+
+
