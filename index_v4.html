@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>忘年会クイズ 2024 – スタイリッシュ版</title>
+    <style>
+        /* 全体のリセットと基本設定 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Hiragino Kaku Gothic ProN', 'メイリオ', sans-serif;
+            /* 背景にスライドで使われている舞台の画像を敷く */
+            background-image: url('5f79c84e-8c7f-48de-807a-2b3a183a2f7c.png');
+            background-size: cover;
+            background-position: center;
+            min-height: 100vh;
+            /* 背景が明るすぎる場合の調整 */
+            backdrop-filter: brightness(0.7);
+        }
+        /* コンテンツを中央寄せにするラッパー */
+        .wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            color: #fff;
+        }
+        /* 共通で各ページを非表示にし、active クラスが付いたら表示 */
+        .page {
+            display: none;
+        }
+        .page.active {
+            display: block;
+        }
+        /* チーム選択ページ */
+        .team-page {
+            text-align: center;
+        }
+        .team-page h1 {
+            font-size: 48px;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
+        }
+        .team-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+        }
+        .team-button {
+            padding: 20px;
+            font-size: 22px;
+            font-weight: bold;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #fff;
+        }
+        /* 色分けした班ボタン */
+        .team-button:nth-child(1) { background: linear-gradient(135deg, #f093fb, #f5576c); }
+        .team-button:nth-child(2) { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+        .team-button:nth-child(3) { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+        .team-button:nth-child(4) { background: linear-gradient(135deg, #fa709a, #fee140); }
+        .team-button:nth-child(5) { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .team-button:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+        }
+        /* 質問と選択肢の六角形ベース */
+        .hex-box {
+            position: relative;
+            margin: 20px auto;
+            padding: 20px 40px;
+            color: #fff;
+            background: rgba(0,0,0,0.7);
+            border: 4px solid #7ec3ff;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+            /* 六角形を作る */
+            clip-path: polygon(50px 0%, calc(100% - 50px) 0%, 100% 50%, calc(100% - 50px) 100%, 50px 100%, 0% 50%);
+        }
+        .question-box {
+            font-size: 30px;
+            line-height: 1.4;
+            /* 四角形にするため六角形のクリップパスを解除し、角丸を設定 */
+            clip-path: none;
+            border-radius: 20px;
+        }
+        .options-container {
+            /* 選択肢は縦方向に1列で並べ、中央揃えにする */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .option-box {
+            cursor: pointer;
+            font-size: 22px;
+            font-weight: 600;
+            text-align: left;
+            transition: all 0.2s ease;
+            /* 文字数に関係なく幅を統一し、中央に配置する */
+            width: 85%;
+            max-width: 85%;
+            margin: 0 auto;
+        }
+        .option-box:hover {
+            border-color: #a4d4ff;
+            transform: translateY(-3px);
+        }
+        .option-box.selected {
+            background: rgba(96, 173, 255, 0.6);
+            border-color: #00c0ff;
+        }
+        /* ボタン共通 */
+        .action-button {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 14px 40px;
+            font-size: 22px;
+            font-weight: bold;
+            color: #fff;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .action-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+        }
+        .action-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        /* 回答ページ */
+        .answer-content {
+            font-size: 24px;
+            line-height: 1.6;
+        }
+        .final-page {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        .final-page h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
+        }
+        .final-page p {
+            font-size: 24px;
+            margin-bottom: 30px;
+        }
+        @media (max-width: 768px) {
+            .question-box { font-size: 24px; }
+            .options-container { grid-template-columns: 1fr; }
+            .hex-box { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <!-- 班選択ページ -->
+        <div id="teamPage" class="page team-page active">
+            <h1>🎉 忘年会クイズ 2024 🎉</h1>
+            <p style="font-size: 24px; margin-bottom: 30px;">班を選択してください</p>
+            <div class="team-buttons">
+                <button class="team-button" onclick="startQuiz(1)">1班</button>
+                <button class="team-button" onclick="startQuiz(2)">2班</button>
+                <button class="team-button" onclick="startQuiz(3)">3班</button>
+                <button class="team-button" onclick="startQuiz(4)">4班</button>
+                <button class="team-button" onclick="startQuiz(5)">5班</button>
+            </div>
+        </div>
+        <!-- 問題ページ -->
+        <div id="quizPage" class="page">
+            <div class="hex-box question-box" id="questionBox"></div>
+            <div class="options-container" id="optionsContainer"></div>
+            <button class="action-button" id="submitAnswerBtn" onclick="submitAnswer()" disabled>回答を見る</button>
+        </div>
+        <!-- 回答ページ -->
+        <div id="answerPage" class="page">
+            <div class="hex-box question-box" id="answerTitle"></div>
+            <div class="hex-box answer-content" id="answerContent" style="margin-top: 20px;"></div>
+            <button class="action-button" id="nextQuizBtn" onclick="goToNextQuestion()">次のクイズへ</button>
+        </div>
+        <!-- 最終ページ -->
+        <div id="finalPage" class="page final-page">
+            <h1>🎊 お疲れ様でした！ 🎊</h1>
+            <p id="finalMessage">全ての回答が送信されました。</p>
+            <button class="action-button" onclick="location.reload()">最初に戻る</button>
+        </div>
+    </div>
+    <script>
+        /*
+         * クイズデータを 15 問分用意します。
+         * 最初の9問はユーザーから提供された内容をそのまま使用し、
+         * 10問目以降はプレースホルダとして「準備中」としています。
+         */
+        const quizData = [
+            {
+                title: '第1問',
+                question: '学生時代、実は〇〇でした！\n組み合わせを正解せよ',
+                options: [
+                    '城井×坊主',
+                    '岩崎×体育会の部活で宴会隊長',
+                    '石田×勉強部',
+                    '前川×体力テストで学年2位'
+                ],
+                answerInfo: '正解は準備中です'
+            },
+            {
+                title: '第2問',
+                question: 'まだ誰にも教えたことのない趣味は？',
+                options: [
+                    '毎田×(母と一緒に)ハガキ職人',
+                    '河村×兄のSNSを監視すること',
+                    '山本×インスタに出てくる女性向け恋愛小説を読む',
+                    '吉田×大きめの公園で、子どもがサッカーするのを見る'
+                ],
+                answerInfo: '正解は準備中です'
+            },
+            {
+                title: '第3問',
+                question: '富樫さんが過去の恋愛にまつわる\n「今だから言える話」は？',
+                options: [
+                    '大学のオープンキャンパスで好きな人を誘っていた',
+                    '大学院生時代に付き合っていた彼女に監禁されていた',
+                    '大学デビューで4月にタイプの女性2人とデートに行った',
+                    '最近一番最初に付き合った彼女に結婚を迫られている'
+                ],
+                answerInfo: '正解は準備中です'
+            },
+            {
+                title: '第4問',
+                question: '岩崎さんの仕事のこだわりは？',
+                options: [
+                    '電話の時に必要以上に声色を上げている',
+                    'イスは一番高いところまで上げて座る',
+                    '若干遅れ目にMeetに入る',
+                    'これでいこう！と思ったことを一晩寝かせて、翌日も良いものと思えれば採用する'
+                ],
+                answerInfo: '正解は準備中です'
+            },
+            {
+                title: '第5問',
+                question: '城井さん最近一番ブチギレた\nエピソードは？',
+                options: [
+                    '大塚さんとフェス(11:00開始)に行く約束してたのに寝坊して18:30に来た',
+                    '車から家へ運ぶ荷物の割合で妻にキレられたこと',
+                    'アイアンがうまく当たらなくてキレ散らかしてます(ゴルフの話)',
+                    '怒ったことない みんなたいせつ しあわせ'
+                ],
+                answerInfo: '正解は準備中です'
+            },
+            {
+                title: '第6問',
+                question: 'えりちょすこと吉川枝里の\n学生時代、実は〇〇でした〜〜',
+                options: [
+                    '大食いだった',
+                    '寝坊ばかりで進級が危なかった',
+                    'インコを飼っていた',
+                    '飲み比べで女性に負けたことがなかった'
+                ],
+                answerInfo: '正解は準備中です'
+            },
+            {
+                title: '第7問',
+                question: 'とっしーこと平井壽希が\nガチで本物と間違えられた芸能人は？',
+                options: [
+                    '平野紫耀(元キンプリ)',
+                    '吉村崇(平成ノブシコブシ)',
+                    '白濱亜嵐(GENERATIONS)',
+                    'その他'
+                ],
+                answerInfo: '正解は準備中です'
+            },
+            {
+                title: '第8問',
+                question: 'なもさんこと名本佳央が\n放ったひとこと',
+                options: [
+                    '可愛くても',
+                    '金持ちでも',
+                    '慶應出ててても',
+                    'TWICEのミナでも'
+                ],
+                answerInfo: '正解は準備中です'
+            },
+            {
+                title: '第9問',
+                question: 'カザフこと赤坂幸亮が\nダーツサークルの部長に立候補した理由',
+                options: [
+                    '前日の飲みで負けたから',
+                    '人の上に立ち支配してみたかったから',
+                    'ガクチカに使えると思ったから',
+                    '可愛い子しか入サーさせたくなかったから'
+                ],
+                answerInfo: '正解は準備中です'
+            },
+            // 10問目以降はプレースホルダの問題
+            {
+                title: '第10問',
+                question: '第10問: 準備中の問題です',
+                options: [ 'オプションA', 'オプションB', 'オプションC', 'オプションD' ],
+                answerInfo: '正解は準備中です'
+            },
+            {
+                title: '第11問',
+                question: '第11問: 準備中の問題です',
+                options: [ 'オプションA', 'オプションB', 'オプションC', 'オプションD' ],
+                answerInfo: '正解は準備中です'
+            },
+            {
+                title: '第12問',
+                question: '第12問: 準備中の問題です',
+                options: [ 'オプションA', 'オプションB', 'オプションC', 'オプションD' ],
+                answerInfo: '正解は準備中です'
+            },
+            {
+                title: '第13問',
+                question: '第13問: 準備中の問題です',
+                options: [ 'オプションA', 'オプションB', 'オプションC', 'オプションD' ],
+                answerInfo: '正解は準備中です'
+            },
+            {
+                title: '第14問',
+                question: '第14問: 準備中の問題です',
+                options: [ 'オプションA', 'オプションB', 'オプションC', 'オプションD' ],
+                answerInfo: '正解は準備中です'
+            },
+            {
+                title: '第15問',
+                question: '第15問: 準備中の問題です',
+                options: [ 'オプションA', 'オプションB', 'オプションC', 'オプションD' ],
+                answerInfo: '正解は準備中です'
+            }
+        ];
+        let currentTeam = null;
+        let currentIndex = 0;
+        let selectedAnswerIndex = null;
+
+        function startQuiz(teamNumber) {
+            currentTeam = teamNumber;
+            currentIndex = 0;
+            selectedAnswerIndex = null;
+            document.getElementById('teamPage').classList.remove('active');
+            showQuestionPage();
+        }
+        function showQuestionPage() {
+            // ボタン無効化
+            document.getElementById('submitAnswerBtn').disabled = true;
+            selectedAnswerIndex = null;
+            // ページの表示制御
+            document.getElementById('answerPage').classList.remove('active');
+            document.getElementById('finalPage').classList.remove('active');
+            document.getElementById('quizPage').classList.add('active');
+            // 問題データの取得
+            const data = quizData[currentIndex];
+            // 問題文の表示
+            document.getElementById('questionBox').textContent = data.title + '\n' + data.question;
+            // 選択肢生成
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+            const labels = ['A','B','C','D'];
+            data.options.forEach((opt, idx) => {
+                const div = document.createElement('div');
+                div.className = 'hex-box option-box';
+                div.innerHTML = `<strong>${labels[idx]}:</strong> ${opt}`;
+                div.onclick = () => selectOption(idx, div);
+                optionsContainer.appendChild(div);
+            });
+        }
+        function selectOption(index, element) {
+            // 選択状態をリセット
+            document.querySelectorAll('.option-box').forEach(box => box.classList.remove('selected'));
+            element.classList.add('selected');
+            selectedAnswerIndex = index;
+            document.getElementById('submitAnswerBtn').disabled = false;
+        }
+        function submitAnswer() {
+            if (selectedAnswerIndex === null) return;
+            // 回答を送信
+            sendAnswerToSheet(currentIndex, selectedAnswerIndex);
+            // 回答ページへ
+            const data = quizData[currentIndex];
+            document.getElementById('answerTitle').textContent = data.title + ' の回答';
+            const labels = ['A','B','C','D'];
+            const chosenLabel = labels[selectedAnswerIndex];
+            let info = '';
+            // 選択した回答のみを表示します。正解情報は表示しません。
+            info += `<p><strong>あなたの回答:</strong> ${chosenLabel} - ${data.options[selectedAnswerIndex]}</p>`;
+            document.getElementById('answerContent').innerHTML = info;
+            document.getElementById('quizPage').classList.remove('active');
+            document.getElementById('answerPage').classList.add('active');
+        }
+        function goToNextQuestion() {
+            currentIndex++;
+            if (currentIndex < quizData.length) {
+                showQuestionPage();
+            } else {
+                document.getElementById('answerPage').classList.remove('active');
+                document.getElementById('finalPage').classList.add('active');
+                document.getElementById('finalMessage').textContent = `${currentTeam}班の全回答を送信しました！`;
+            }
+        }
+        /**
+         * Google Apps Script に回答を送信
+         */
+        function sendAnswerToSheet(questionIndex, answerIndex) {
+            const GAS_URL = 'https://script.google.com/macros/s/AKfycbzJLAWirxBMCYU0JaL3yrz0jnmi9dtDhWV5BXQps1RpNr_ebgTArKJtybnJfTQ5dBDq/exec';
+            const labels = ['A','B','C','D'];
+            const answerData = {
+                team: currentTeam,
+                questionNumber: questionIndex + 1,
+                answer: labels[answerIndex],
+                timestamp: new Date().toISOString()
+            };
+            // localStorage に保存（バックアップ）
+            const allResults = JSON.parse(localStorage.getItem('quizResults') || '[]');
+            allResults.push(answerData);
+            localStorage.setItem('quizResults', JSON.stringify(allResults));
+            // hidden iframe と form を生成して送信
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.name = 'hidden_iframe_' + Date.now();
+            document.body.appendChild(iframe);
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = GAS_URL;
+            form.target = iframe.name;
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'data';
+            input.value = JSON.stringify(answerData);
+            form.appendChild(input);
+            document.body.appendChild(form);
+            form.submit();
+            console.log(`✓ ${currentTeam}班 Q${questionIndex + 1} の回答(${labels[answerIndex]})を送信しました`);
+            setTimeout(() => {
+                if (document.body.contains(form)) document.body.removeChild(form);
+                if (document.body.contains(iframe)) document.body.removeChild(iframe);
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
