@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>忘年会クイズ 2024 – スタイリッシュ版</title>
+    <title>忘年会クイズ 2024 – スタイリッシュ版（修正版）</title>
     <style>
-        /* 全体のリセットと基本設定 */
+        /* 全体リセットと基本設定 */
         * {
             margin: 0;
             padding: 0;
@@ -13,32 +13,23 @@
         }
         body {
             font-family: 'Hiragino Kaku Gothic ProN', 'メイリオ', sans-serif;
-            /* 背景にスライドで使われている舞台の画像を敷く */
             background-image: url('Gemini_Generated_Image_rtqwnhrtqwnhrtqw.png');
             background-size: cover;
             background-position: center;
             min-height: 100vh;
-            /* 背景が明るすぎる場合の調整 */
             backdrop-filter: brightness(0.7);
         }
-        /* コンテンツを中央寄せにするラッパー */
         .wrapper {
             max-width: 1200px;
             margin: 0 auto;
             padding: 40px 20px;
             color: #fff;
         }
-        /* 共通で各ページを非表示にし、active クラスが付いたら表示 */
-        .page {
-            display: none;
-        }
-        .page.active {
-            display: block;
-        }
+        .page { display: none; }
+        .page.active { display: block; }
+
         /* チーム選択ページ */
-        .team-page {
-            text-align: center;
-        }
+        .team-page { text-align: center; }
         .team-page h1 {
             font-size: 48px;
             margin-bottom: 30px;
@@ -59,7 +50,6 @@
             transition: all 0.3s ease;
             color: #fff;
         }
-        /* 色分けした班ボタン */
         .team-button:nth-child(1) { background: linear-gradient(135deg, #f093fb, #f5576c); }
         .team-button:nth-child(2) { background: linear-gradient(135deg, #4facfe, #00f2fe); }
         .team-button:nth-child(3) { background: linear-gradient(135deg, #43e97b, #38f9d7); }
@@ -69,7 +59,8 @@
             transform: translateY(-4px);
             box-shadow: 0 10px 30px rgba(0,0,0,0.4);
         }
-        /* 質問と選択肢の六角形ベース */
+
+        /* 質問と選択肢のベースボックス。六角形をやめ、角丸の四角形に */
         .hex-box {
             position: relative;
             margin: 20px auto;
@@ -78,19 +69,14 @@
             background: rgba(0,0,0,0.7);
             border: 4px solid #7ec3ff;
             box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-            /* 六角形を作る */
             clip-path: none;
             border-radius: 20px;
         }
         .question-box {
             font-size: 30px;
             line-height: 1.4;
-            /* 四角形にするため六角形のクリップパスを解除し、角丸を設定 */
-            clip-path: none;
-            border-radius: 20px;
         }
         .options-container {
-            /* 選択肢は縦方向に1列で並べ、中央揃えにする */
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -103,7 +89,6 @@
             font-weight: 600;
             text-align: left;
             transition: all 0.2s ease;
-            /* 文字数に関係なく幅を統一し、中央に配置する */
             width: 95%;
             max-width: 95%;
             margin: 0 auto;
@@ -138,7 +123,6 @@
             opacity: 0.5;
             cursor: not-allowed;
         }
-        /* 回答ページ */
         .answer-content {
             font-size: 24px;
             line-height: 1.6;
@@ -158,7 +142,7 @@
         }
         @media (max-width: 768px) {
             .question-box { font-size: 24px; }
-            .options-container { grid-template-columns: 1fr; }
+            .options-container { gap: 15px; }
             .hex-box { padding: 20px; }
         }
     </style>
@@ -227,7 +211,7 @@
             },
             {
                 title: '第3問',
-                question: '富樫さんが、過去の恋愛にまつわる「今だから言える話」は？,
+                question: '富樫さんが、過去の恋愛にまつわる「今だから言える話」は？',
                 options: [
                     '成約率が高いオープンキャンパスデートに、好きな人を誘っていた',
                     '大学院生時代に付き合っていた彼女に監禁されていた',
@@ -370,6 +354,7 @@
                 answerInfo: '正解は準備中です'
             }
         ];
+
         let currentTeam = null;
         let currentIndex = 0;
         let selectedAnswerIndex = null;
@@ -389,14 +374,14 @@
             document.getElementById('answerPage').classList.remove('active');
             document.getElementById('finalPage').classList.remove('active');
             document.getElementById('quizPage').classList.add('active');
-            // 問題データの取得
+            // 問題データ
             const data = quizData[currentIndex];
             // 問題文の表示
             document.getElementById('questionBox').textContent = data.title + '\n' + data.question;
             // 選択肢生成
             const optionsContainer = document.getElementById('optionsContainer');
             optionsContainer.innerHTML = '';
-            const labels = ['A','B','C','D'];
+            const labels = ['A', 'B', 'C', 'D'];
             data.options.forEach((opt, idx) => {
                 const div = document.createElement('div');
                 div.className = 'hex-box option-box';
@@ -406,7 +391,6 @@
             });
         }
         function selectOption(index, element) {
-            // 選択状態をリセット
             document.querySelectorAll('.option-box').forEach(box => box.classList.remove('selected'));
             element.classList.add('selected');
             selectedAnswerIndex = index;
@@ -414,16 +398,12 @@
         }
         function submitAnswer() {
             if (selectedAnswerIndex === null) return;
-            // 回答を送信
             sendAnswerToSheet(currentIndex, selectedAnswerIndex);
-            // 回答ページへ
             const data = quizData[currentIndex];
             document.getElementById('answerTitle').textContent = data.title + ' の回答';
             const labels = ['A','B','C','D'];
             const chosenLabel = labels[selectedAnswerIndex];
-            let info = '';
-            // 選択した回答のみを表示します。正解情報は表示しません。
-            info += `<p><strong>あなたの回答:</strong> ${chosenLabel} - ${data.options[selectedAnswerIndex]}</p>`;
+            const info = `<p><strong>あなたの回答:</strong> ${chosenLabel} - ${data.options[selectedAnswerIndex]}</p>`;
             document.getElementById('answerContent').innerHTML = info;
             document.getElementById('quizPage').classList.remove('active');
             document.getElementById('answerPage').classList.add('active');
@@ -438,9 +418,6 @@
                 document.getElementById('finalMessage').textContent = `${currentTeam}班の全回答を送信しました！`;
             }
         }
-        /**
-         * Google Apps Script に回答を送信
-         */
         function sendAnswerToSheet(questionIndex, answerIndex) {
             const GAS_URL = 'https://script.google.com/macros/s/AKfycbzJLAWirxBMCYU0JaL3yrz0jnmi9dtDhWV5BXQps1RpNr_ebgTArKJtybnJfTQ5dBDq/exec';
             const labels = ['A','B','C','D'];
@@ -450,11 +427,9 @@
                 answer: labels[answerIndex],
                 timestamp: new Date().toISOString()
             };
-            // localStorage に保存（バックアップ）
             const allResults = JSON.parse(localStorage.getItem('quizResults') || '[]');
             allResults.push(answerData);
             localStorage.setItem('quizResults', JSON.stringify(allResults));
-            // hidden iframe と form を生成して送信
             const iframe = document.createElement('iframe');
             iframe.style.display = 'none';
             iframe.name = 'hidden_iframe_' + Date.now();
