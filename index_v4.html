@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>忘年会クイズ 2024 – スタイリッシュ版（修正版）</title>
+    <title>2025年度上期締め会クイズ回答用Webアプリ</title>
     <style>
         /* 全体リセットと基本設定 */
         * {
@@ -123,6 +123,12 @@
             opacity: 0.5;
             cursor: not-allowed;
         }
+        #submitAnswerBtn,
+        #nextQuizBtn {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
         .answer-content {
             font-size: 24px;
             line-height: 1.6;
@@ -151,7 +157,7 @@
     <div class="wrapper">
         <!-- 班選択ページ -->
         <div id="teamPage" class="page team-page active">
-            <h1>🎉 忘年会クイズ 2024 🎉</h1>
+            <h1>🎉 2025年度上期締め会 🎉</h1>
             <p style="font-size: 24px; margin-bottom: 30px;">班を選択してください</p>
             <div class="team-buttons">
                 <button class="team-button" onclick="startQuiz(1)">1班</button>
