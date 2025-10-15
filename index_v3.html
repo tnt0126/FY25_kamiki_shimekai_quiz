@@ -372,22 +372,30 @@
             selectedAnswerIndex = index;
             document.getElementById('submitAnswerBtn').disabled = false;
         }
-        function submitAnswer() {
-            if (selectedAnswerIndex === null) return;
-            // 回答を送信
-            sendAnswerToSheet(currentIndex, selectedAnswerIndex);
-            // 回答ページへ
-            const data = quizData[currentIndex];
-            document.getElementById('answerTitle').textContent = data.title + ' の回答';
-            const labels = ['A','B','C','D'];
-            const chosenLabel = labels[selectedAnswerIndex];
-            let info = '';
-            info += `<p><strong>あなたの回答:</strong> ${chosenLabel} - ${data.options[selectedAnswerIndex]}</p>`;
-            info += `<p><strong>正解情報:</strong> ${data.answerInfo}</p>`;
-            document.getElementById('answerContent').innerHTML = info;
-            document.getElementById('quizPage').classList.remove('active');
-            document.getElementById('answerPage').classList.add('active');
-        }
+        // function submitAnswer() {
+        //     if (selectedAnswerIndex === null) return;
+        //     // 回答を送信
+        //     sendAnswerToSheet(currentIndex, selectedAnswerIndex);
+        //     // 回答ページへ
+        //     const data = quizData[currentIndex];
+        //     document.getElementById('answerTitle').textContent = data.title + ' の回答';
+        //     const labels = ['A','B','C','D'];
+        //     const chosenLabel = labels[selectedAnswerIndex];
+        //     let info = '';
+        //     info += `<p><strong>あなたの回答:</strong> ${chosenLabel} - ${data.options[selectedAnswerIndex]}</p>`;
+        //     info += `<p><strong>正解情報:</strong> ${data.answerInfo}</p>`;
+        //     document.getElementById('answerContent').innerHTML = info;
+        //     document.getElementById('quizPage').classList.remove('active');
+        //     document.getElementById('answerPage').classList.add('active');
+        // }
+        @@ function submitAnswer() {
+-            info += `<p><strong>あなたの回答:</strong> ${chosenLabel} - ${data.options[selectedAnswerIndex]}</p>`;
+-            info += `<p><strong>正解情報:</strong> ${data.answerInfo}</p>`;
+-            document.getElementById('answerContent').innerHTML = info;
++            // 選択した回答のみを表示します。正解情報は表示しません。
++            info += `<p><strong>あなたの回答:</strong> ${chosenLabel} - ${data.options[selectedAnswerIndex]}</p>`;
++            document.getElementById('answerContent').innerHTML = info;
+
         function goToNextQuestion() {
             currentIndex++;
             if (currentIndex < quizData.length) {
