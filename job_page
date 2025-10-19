@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>求人特集 | レバテックダイレクト</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <style>
+    :root {
+      --primary-color: #00174E;
+      --accent-color: #FF8D2B;
+      --light-bg: #F7F8FA;
+      --link-color: #4FC6F2;
+      --border-color: #E0E3EA;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'メイリオ', Meiryo, Osaka, 'ヒラギノ角ゴ Pro W3', 'Hiragino Kaku Gothic Pro', 'ＭＳ Ｐゴシック', 'MS PGothic', sans-serif;
+      line-height: 1.6;
+      color: var(--primary-color);
+      background-color: #fff;
+    }
+    a {
+      color: var(--link-color);
+      text-decoration: none;
+    }
+    header {
+      background-color: #fff;
+      border-bottom: 1px solid var(--border-color);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    header .logo {
+      display: flex;
+      align-items: center;
+    }
+    header .logo img {
+      height: 28px;
+    }
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      font-size: 14px;
+    }
+    nav a {
+      color: var(--primary-color);
+      font-weight: 600;
+    }
+    nav a.primary-button {
+      background-color: var(--accent-color);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 4px;
+    }
+    /* Hero section */
+    .hero {
+      background-color: var(--light-bg);
+      padding: 40px 24px;
+      text-align: center;
+    }
+    .hero h1 {
+      font-size: 28px;
+      margin-top: 0;
+      margin-bottom: 12px;
+      font-weight: 700;
+      color: var(--primary-color);
+    }
+    .hero p {
+      font-size: 16px;
+      margin-bottom: 24px;
+      color: var(--primary-color);
+    }
+    .search-filters {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .search-filters input,
+    .search-filters select {
+      padding: 8px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    .search-filters button {
+      background-color: var(--accent-color);
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      padding: 8px 20px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    /* Tag section */
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 32px;
+    }
+    .tag {
+      background-color: var(--light-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 4px 12px;
+      font-size: 12px;
+      color: var(--primary-color);
+    }
+    /* Job cards */
+    .jobs {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      padding: 0 24px 40px;
+      max-width: 1040px;
+      margin: 0 auto;
+    }
+    .job-card {
+      background-color: #fff;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      transition: box-shadow 0.2s ease-in-out;
+    }
+    .job-card:hover {
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .job-card a.card-link {
+      display: flex;
+      flex-direction: column;
+      padding: 16px;
+      flex-grow: 1;
+      color: var(--primary-color);
+    }
+    .job-card h3 {
+      font-size: 18px;
+      margin: 0 0 8px 0;
+      font-weight: 700;
+    }
+    .job-card .company {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .job-card .detail {
+      font-size: 12px;
+      color: #334571;
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 4px;
+    }
+    .job-card .detail img {
+      width: 16px;
+      height: 16px;
+      margin-right: 4px;
+    }
+    .job-card .btn {
+      margin-top: auto;
+      background-color: var(--accent-color);
+      color: #fff;
+      text-align: center;
+      padding: 8px 0;
+      border-radius: 0 0 8px 8px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    /* Benefits section */
+    .benefits {
+      background-color: var(--light-bg);
+      padding: 40px 24px;
+      margin-top: 40px;
+    }
+    .benefits h2 {
+      text-align: center;
+      font-size: 24px;
+      margin-bottom: 24px;
+      color: var(--primary-color);
+    }
+    .benefit-items {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 24px;
+      max-width: 1040px;
+      margin: 0 auto;
+    }
+    .benefit-item {
+      background-color: #fff;
+      border-radius: 8px;
+      padding: 20px;
+      border: 1px solid var(--border-color);
+      text-align: center;
+    }
+    .benefit-item h3 {
+      font-size: 16px;
+      margin-top: 12px;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+    .benefit-item p {
+      font-size: 13px;
+      color: #334571;
+      margin: 0;
+    }
+    /* Call to action */
+    .cta {
+      padding: 40px 24px;
+      text-align: center;
+    }
+    .cta h2 {
+      font-size: 22px;
+      margin-bottom: 16px;
+    }
+    .cta p {
+      font-size: 15px;
+      margin-bottom: 24px;
+    }
+    .cta a {
+      display: inline-block;
+      background-color: var(--accent-color);
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 4px;
+      font-size: 16px;
+      font-weight: 600;
+    }
+    /* App section */
+    .app-section {
+      background-color: var(--light-bg);
+      padding: 40px 24px;
+      text-align: center;
+    }
+    .app-section h2 {
+      font-size: 22px;
+      margin-bottom: 16px;
+    }
+    .app-buttons img {
+      height: 56px;
+      margin: 0 8px;
+    }
+    /* Footer */
+    footer {
+      background-color: var(--primary-color);
+      color: #fff;
+      padding: 40px 24px;
+    }
+    footer a {
+      color: var(--link-color);
+      font-size: 14px;
+    }
+    footer .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    footer .copyright {
+      text-align: center;
+      font-size: 12px;
+      margin-top: 24px;
+    }
+    @media (max-width: 600px) {
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      nav {
+        margin-top: 8px;
+        gap: 12px;
+      }
+      .app-buttons img {
+        height: 44px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="logo">
+      <a href="https://levtech-direct.jp/">
+        <img src="https://d375w6nzl58bw0.cloudfront.net/uploads/33126d3a99e18a282542b586c370784b87c6fb91f68730638ce1620922541403.png" alt="レバテックダイレクト ロゴ" />
+      </a>
+    </div>
+    <nav>
+      <a href="https://levtech-direct.jp/search">求人を探す</a>
+      <a href="https://levtech-direct.jp/register" class="primary-button">会員登録</a>
+      <a href="https://levtech-direct.jp/login">ログイン</a>
+      <a href="https://levtech.jp">人材をお探しの企業様はこちら</a>
+    </nav>
+  </header>
+
+  <!-- Hero section -->
+  <section class="hero">
+    <h1>あなたにぴったりの求人特集</h1>
+    <p>ご経験や志向にマッチした企業をピックアップしました。勤務地や職種から簡単に探せます。</p>
+    <!-- Search filters (reference to Doda: location, occupation, keyword search)【198152362429690†L130-L137】 -->
+    <div class="search-filters">
+      <select name="occupation" aria-label="職種を選択">
+        <option value="">職種を選択</option>
+        <option value="engineer">エンジニア</option>
+        <option value="designer">デザイナー</option>
+        <option value="pm">プロジェクトマネージャー</option>
+        <option value="consultant">コンサルタント</option>
+      </select>
+      <select name="location" aria-label="勤務地を選択">
+        <option value="">勤務地を選択</option>
+        <option value="tokyo">東京</option>
+        <option value="remote">リモート</option>
+        <option value="osaka">大阪</option>
+        <option value="others">その他</option>
+      </select>
+      <input type="text" placeholder="キーワードで探す" aria-label="キーワード検索">
+      <button type="button">検索</button>
+    </div>
+    <!-- Hashtag navigation: helps users find themes quickly【198152362429690†L112-L117】 -->
+    <div class="tags">
+      <span class="tag">#勤務地</span>
+      <span class="tag">#給与UP</span>
+      <span class="tag">#会社の特徴</span>
+      <span class="tag">#仕事内容・スキル</span>
+      <span class="tag">#リモートワーク</span>
+      <span class="tag">#フレックス制度</span>
+    </div>
+  </section>
+
+  <!-- Job cards -->
+  <section class="jobs">
+    <!-- Job 1 card -->
+    <div class="job-card">
+      <a href="[%job_1_url | Default Value%]" class="card-link" target="_blank">
+        <h3>[%job_1_title | Default Value%]</h3>
+        <div class="company">[%job_1_company | Default Value%]</div>
+        <div class="detail">
+          <img src="https://d375w6nzl58bw0.cloudfront.net/uploads/9b18a5e6de65e688ceca909eaecf5bc7846f5d6102a21e23e618eb068196f470.png" alt="年収">
+          <span>[%job_1_min_income | Default Value%]万 〜 [%job_1_max_income | Default Value%]万</span>
+        </div>
+        <div class="detail">
+          <img src="https://d375w6nzl58bw0.cloudfront.net/uploads/a4732790523e633a9f641af4c5e2ebf27824245f67dfe07e67a7e3394fe7d7a6.png" alt="職種">
+          <span>[%job_1_occupations | Default Value%]</span>
+        </div>
+        <div class="detail">
+          <img src="https://d375w6nzl58bw0.cloudfront.net/uploads/d0255c0493d5e3042dbd3e713721cbb4ed00324cebbe704c33f2fe4e0a189fca.png" alt="技術スキル">
+          <span>[%job_1_skills | Default Value%]</span>
+        </div>
+      </a>
+      <a href="[%job_1_url | Default Value%]" class="btn" target="_blank">詳細を見る</a>
+    </div>
+
+    <!-- Job 2 card -->
+    <div class="job-card">
+      <a href="[%job_2_url | Default Value%]" class="card-link" target="_blank">
+        <h3>[%job_2_title | Default Value%]</h3>
+        <div class="company">[%job_2_company | Default Value%]</div>
+        <div class="detail">
+          <img src="https://d375w6nzl58bw0.cloudfront.net/uploads/9b18a5e6de65e688ceca909eaecf5bc7846f5d6102a21e23e618eb068196f470.png" alt="年収">
+          <span>[%job_2_min_income | Default Value%]万 〜 [%job_2_max_income | Default Value%]万</span>
+        </div>
+        <div class="detail">
+          <img src="https://d375w6nzl58bw0.cloudfront.net/uploads/a4732790523e633a9f641af4c5e2ebf27824245f67dfe07e67a7e3394fe7d7a6.png" alt="職種">
+          <span>[%job_2_occupations | Default Value%]</span>
+        </div>
+        <div class="detail">
+          <img src="https://d375w6nzl58bw0.cloudfront.net/uploads/d0255c0493d5e3042dbd3e713721cbb4ed00324cebbe704c33f2fe4e0a189fca.png" alt="技術スキル">
+          <span>[%job_2_skills | Default Value%]</span>
+        </div>
+      </a>
+      <a href="[%job_2_url | Default Value%]" class="btn" target="_blank">詳細を見る</a>
+    </div>
+
+    <!-- Job 3 card -->
+    <div class="job-card">
+      <a href="[%job_3_url | Default Value%]" class="card-link" target="_blank">
+        <h3>[%job_3_title | Default Value%]</h3>
+        <div class="company">[%job_3_company | Default Value%]</div>
+        <div class="detail">
+          <img src="https://d375w6nzl58bw0.cloudfront.net/uploads/9b18a5e6de65e688ceca909eaecf5bc7846f5d6102a21e23e618eb068196f470.png" alt="年収">
+          <span>[%job_3_min_income | Default Value%]万 〜 [%job_3_max_income | Default Value%]万</span>
+        </div>
+        <div class="detail">
+          <img src="https://d375w6nzl58bw0.cloudfront.net/uploads/a4732790523e633a9f641af4c5e2ebf27824245f67dfe07e67a7e3394fe7d7a6.png" alt="職種">
+          <span>[%job_3_occupations | Default Value%]</span>
+        </div>
+        <div class="detail">
+          <img src="https://d375w6nzl58bw0.cloudfront.net/uploads/d0255c0493d5e3042dbd3e713721cbb4ed00324cebbe704c33f2fe4e0a189fca.png" alt="技術スキル">
+          <span>[%job_3_skills | Default Value%]</span>
+        </div>
+      </a>
+      <a href="[%job_3_url | Default Value%]" class="btn" target="_blank">詳細を見る</a>
+    </div>
+  </section>
+
+  <!-- Benefits of Levtech Direct -->
+  <section class="benefits">
+    <h2>レバテックダイレクトの特徴</h2>
+    <div class="benefit-items">
+      <div class="benefit-item">
+        <h3>高品質なスカウトメッセージ</h3>
+        <p>企業が1通1通厳選して送信し、93%が面接／面談確約の情熱スカウトです【488614093745076†L35-L41】。</p>
+      </div>
+      <div class="benefit-item">
+        <h3>マッチ率判定</h3>
+        <p>19年の支援実績データと機械学習を活用し、あなたの入社後の活躍を可視化します【488614093745076†L46-L52】。</p>
+      </div>
+      <div class="benefit-item">
+        <h3>充実した企業情報</h3>
+        <p>専門チームが開発環境やエンジニア組織などの情報を取材し、詳細な企業情報を提供します【488614093745076†L56-L62】。</p>
+      </div>
+      <div class="benefit-item">
+        <h3>専門特化の検索機能</h3>
+        <p>約60の職種、90のスキルで検索可能。副業やリモートワークなどこだわり条件も豊富です【488614093745076†L65-L71】。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Call to action for login -->
+  <section class="cta">
+    <h2>ログインしてスカウトを受け取りましょう</h2>
+    <p>プロフィールを充実させると、企業からのスカウトが届きやすくなります。ぜひ今すぐログインしてください。</p>
+    <a href="https://levtech-direct.jp/login">ログインする</a>
+  </section>
+
+  <!-- App download section -->
+  <section class="app-section">
+    <h2>便利な公式アプリを今すぐダウンロード</h2>
+    <p>プッシュ通知で返信や連絡を忘れず、どこでも求人検索やスカウト確認ができます。</p>
+    <div class="app-buttons">
+      <a href="https://u14787980.ct.sendgrid.net/ls/click?upn=G67GDwkRC3SEw1RPOD3hgSQcb1tFphJNs5cmtL8bs3xAe1Jh018vH3v-2BiTjC0mWKIel-2BmUka9KdUiu-2BUod7-2Fiw-3D-3DtVYu_VN9NonpDw6STGUrqrtcz1J1SLi34Obwdy9yvkWLKpOB2-2FcexCu20pvRDPVCxd3nuoAuXD287Yfem9AR6Bzng1JU9W0YDZjFNRTcHBqf4pvNoT-2B8IOqJJ5gEBsHUoPpMVynGp3TBmSGYF6t5B-2BEWSHZ-2BaoPEOKH8fCMiMagX8TzqbvICKT90yK7iEOUB40fQ55sVqvISaCxHtdBuTDVFAWMZ-2FvXTPLG2F6Pk7nYDu3Q4-3D" target="_blank"><img src="https://d375w6nzl58bw0.cloudfront.net/uploads/c55fedf1c4c89b3e596882139e92684e3135087352f654abf9b49a85644f089f.png" alt="App Store"></a>
+      <a href="https://u14787980.ct.sendgrid.net/ls/click?upn=G67GDwkRC3SEw1RPOD3hgRR1diwtHWg8YXg6aHcvWFUYRW0KQGiaAUBooK9IGggJC2JUWGjmXMYzKytu8s5Z99N7kUijqTyculATRt8S2SE-3DTa_A_VN9NonpDw6STGUrqrtcz1J1SLi34Obwdy9yvkWLKpOB2-2FcexCu20pvRDPVCxd3nuoAuXD287Yfem9AR6Bzng1O-2F88hZ5beyiIOdsQUFiMFFcbcnTGzBA0E22DcwvsfAy6LHCb8MNklLRROlUc42qZcMrMM0-2FYIgP-2FsDuuRQVG6zd5G9g-2FXJ0-2F3AfcD6-2BkqtnnRpEpqy4SY0Q1q7renPZpDYtP-2FgIrOOI1nldQFemGFU-3D" target="_blank"><img src="https://d375w6nzl58bw0.cloudfront.net/uploads/ca82dd61a68b90e41f8d5ed62648efa254c258b8e148ad793927227245de2003.png" alt="Google Play"></a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-links">
+      <a href="https://levtech-direct.jp/search">IT・Web求人を探す</a>
+      <a href="https://levtech-direct.jp/faq">よくある質問</a>
+      <a href="https://levtech-direct.jp/contact">個人向けお問い合わせ</a>
+      <a href="https://levtech-direct.jp/sitemap">サイトマップ</a>
+      <a href="https://levtech.jp">人材をお探しの企業様へ</a>
+      <a href="https://levtech.jp/contact">法人向けお問い合わせ</a>
+    </div>
+    <div class="footer-links">
+      <a href="https://levtech.jp/tos">利用規約</a>
+      <a href="https://id.levtech.jp/tos">レバテックID利用規約</a>
+      <a href="https://leverages.jp/privacy-policy">プライバシーポリシー</a>
+    </div>
+    <div class="copyright">
+      © 2025 Levtech Co., Ltd.
+    </div>
+  </footer>
+</body>
+</html>
