@@ -4,6 +4,17 @@
   <meta charset="UTF-8">
   <title>求人特集 | レバテックダイレクト</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <script>
+    // シンプルなパスワード保護。
+    document.addEventListener('DOMContentLoaded', function() {
+      var pass = prompt('ページを表示するにはパスワードを入力してください');
+      if (pass !== 'kyuuzinnpe-zidayo') {
+        alert('パスワードが間違っています。');
+        // 入力が間違っている場合、空白ページにリダイレクトします。
+        window.location.href = 'about:blank';
+      }
+    });
+  </script>
   <style>
     :root {
       --primary-color: #00174E;
