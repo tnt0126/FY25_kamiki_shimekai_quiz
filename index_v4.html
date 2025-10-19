@@ -424,6 +424,14 @@
                 document.getElementById('finalMessage').textContent = `${currentTeam}班の全回答を送信しました！`;
             }
         }
+        /**
+         * 回答データを Google Apps Script に送信する
+         *
+         * 元の実装では iframe とフォームを生成して送信していましたが、
+         * 短時間に多数のユーザーが送信するとリクエストが途中で破棄されることがありました。
+         * ここでは Beacon API または Fetch API を用いて確実に非同期送信します。
+         * Beacon API はページ遷移やタブを閉じる直前でもリクエストをバックグラウンド送信します。
+         */
         function sendAnswerToSheet(questionIndex, answerIndex) {
             const GAS_URL = 'https://script.google.com/macros/s/AKfycbzJLAWirxBMCYU0JaL3yrz0jnmi9dtDhWV5BXQps1RpNr_ebgTArKJtybnJfTQ5dBDq/exec';
             const labels = ['A','B','C','D'];
@@ -433,29 +441,38 @@
                 answer: labels[answerIndex],
                 timestamp: new Date().toISOString()
             };
-            const allResults = JSON.parse(localStorage.getItem('quizResults') || '[]');
-            allResults.push(answerData);
-            localStorage.setItem('quizResults', JSON.stringify(allResults));
-            const iframe = document.createElement('iframe');
-            iframe.style.display = 'none';
-            iframe.name = 'hidden_iframe_' + Date.now();
-            document.body.appendChild(iframe);
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = GAS_URL;
-            form.target = iframe.name;
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = 'data';
-            input.value = JSON.stringify(answerData);
-            form.appendChild(input);
-            document.body.appendChild(form);
-            form.submit();
+            // クライアント側でも過去の回答を記録
+            try {
+                const allResults = JSON.parse(localStorage.getItem('quizResults') || '[]');
+                allResults.push(answerData);
+                localStorage.setItem('quizResults', JSON.stringify(allResults));
+            } catch (err) {
+                console.warn('ローカルストレージへの保存に失敗しました:', err);
+            }
+            // Apps Script へ送信するペイロードを URL エンコード形式で構築
+            const payload = 'data=' + encodeURIComponent(JSON.stringify(answerData));
+            try {
+                if (navigator.sendBeacon) {
+                    // Beacon API は Content-Type を変更できないため、application/x-www-form-urlencoded で送信
+                    const blob = new Blob([payload], { type: 'application/x-www-form-urlencoded' });
+                    navigator.sendBeacon(GAS_URL, blob);
+                } else {
+                    // Beacon API が使えない環境では Fetch API を使用（no-cors でレスポンスは読み取らない）
+                    fetch(GAS_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+                        },
+                        body: payload
+                    }).catch((err) => {
+                        console.error('回答送信に失敗しました:', err);
+                    });
+                }
+            } catch (err) {
+                console.error('回答送信中に例外が発生しました:', err);
+            }
             console.log(`✓ ${currentTeam}班 Q${questionIndex + 1} の回答(${labels[answerIndex]})を送信しました`);
-            setTimeout(() => {
-                if (document.body.contains(form)) document.body.removeChild(form);
-                if (document.body.contains(iframe)) document.body.removeChild(iframe);
-            }, 2000);
         }
     </script>
 </body>
